@@ -1,0 +1,5 @@
+name: CodeSentinel Action
+description: AI-powered code review GitHub Action
+runs:
+  using: node20
+  main: dist/index.js
