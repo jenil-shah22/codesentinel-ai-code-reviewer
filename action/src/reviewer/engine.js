@@ -1,8 +1,21 @@
+const IGNORED_PATHS = [
+  "node_modules/",
+  "dist/",
+  "package-lock.json",
+  "yarn.lock"
+];
+
+function shouldIgnoreFile(filename) {
+  return IGNORED_PATHS.some(prefix => filename.startsWith(prefix));
+}
 function runReview(files) {
   const findings = [];
 
   for (const file of files) {
     const { filename, patch } = file;
+    if (shouldIgnoreFile(filename)) {
+  continue;
+}
 
     // Skip files without diffs
     if (!patch) continue;
