@@ -5,23 +5,22 @@ on:
     types:
       - opened
       - synchronize
-  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
 
 jobs:
   review:
     runs-on: ubuntu-latest
 
-    permissions:
-      contents: read
-      pull-requests: write
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
 
-      - name: Run CodeSentinel Action
+      - name: Run CodeSentinel Review
         uses: ./action
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
