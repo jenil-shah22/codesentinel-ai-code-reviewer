@@ -1,5 +1,7 @@
 # Node dependencies
 node_modules/
+action/src/
+action/node_modules/
 
 # Logs
 npm-debug.log*
