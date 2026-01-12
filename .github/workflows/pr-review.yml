@@ -2,7 +2,9 @@ name: CodeSentinel PR Review
 
 on:
   pull_request:
-    types: [opened, synchronize]
+    types:
+      - opened
+      - synchronize
   workflow_dispatch:
 
 jobs:
@@ -11,12 +13,14 @@ jobs:
 
     permissions:
       contents: read
-      pull-requests: read
+      pull-requests: write
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Run CodeSentinel Action
         uses: ./action
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
