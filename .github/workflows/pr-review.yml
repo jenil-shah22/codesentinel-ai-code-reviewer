@@ -1,16 +1,22 @@
 name: CodeSentinel PR Review
 
 on:
-  workflow_dispatch:
   pull_request:
     types: [opened, synchronize]
+  workflow_dispatch:
 
 jobs:
   review:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      pull-requests: read
+
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Run CodeSentinel Action
         uses: ./action
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
