@@ -29922,6 +29922,102 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
+/***/ 9243:
+/***/ ((module) => {
+
+function runReview(files) {
+  const findings = [];
+
+  for (const file of files) {
+    const { filename, patch } = file;
+
+    // Skip files without diffs
+    if (!patch) continue;
+
+    // Rule 1: console.log in JS/TS files
+    if (
+      (filename.endsWith(".js") || filename.endsWith(".ts")) &&
+      patch.includes("console.log")
+    ) {
+      findings.push({
+        file: filename,
+        type: "warning",
+        message: "console.log found in code. Remove before production."
+      });
+    }
+
+    // Rule 2: TODO comments
+    if (patch.includes("TODO")) {
+      findings.push({
+        file: filename,
+        type: "info",
+        message: "TODO comment found. Ensure it is tracked."
+      });
+    }
+
+    // Rule 3: Large diff
+    const changedLines = patch.split("\n").length;
+    if (changedLines > 200) {
+      findings.push({
+        file: filename,
+        type: "warning",
+        message: "Large change detected. Consider splitting this PR."
+      });
+    }
+  }
+
+  return findings;
+}
+
+module.exports = { runReview };
+
+/***/ }),
+
+/***/ 2991:
+/***/ ((module) => {
+
+function formatReview(findings) {
+  if (!findings || findings.length === 0) {
+    return (
+      "✅ **Automated Code Review Result**\n\n" +
+      "No issues found. The changes look good."
+    );
+  }
+
+  let output = "🧠 **Automated Code Review**\n\n";
+
+  const groupedByFile = {};
+
+  // Group findings by file
+  for (const finding of findings) {
+    if (!groupedByFile[finding.file]) {
+      groupedByFile[finding.file] = [];
+    }
+    groupedByFile[finding.file].push(finding);
+  }
+
+  // Build readable output
+  for (const fileName of Object.keys(groupedByFile)) {
+    output += `### 📄 ${fileName}\n`;
+
+    for (const item of groupedByFile[fileName]) {
+      let icon = "❗";
+      if (item.type === "warning") icon = "⚠️";
+      if (item.type === "info") icon = "ℹ️";
+
+      output += `- ${icon} ${item.message}\n`;
+    }
+
+    output += "\n";
+  }
+
+  return output;
+}
+
+module.exports = { formatReview };  
+
+/***/ }),
+
 /***/ 2613:
 /***/ ((module) => {
 
@@ -31834,6 +31930,8 @@ module.exports = parseParams
 /******/ 	
 /************************************************************************/
 var __webpack_exports__ = {};
+const { runReview } = __nccwpck_require__(9243);
+const { formatReview } = __nccwpck_require__(2991);
 const core = __nccwpck_require__(7484);
 const github = __nccwpck_require__(3228);
 
@@ -31872,14 +31970,16 @@ async function run() {
 
     console.log(`Files changed in PR: ${response.data.length}`);
 
-    for (const file of response.data) {
-      console.log("-----");
-      console.log(`File: ${file.filename}`);
-      console.log(`Status: ${file.status}`);
-      if (file.patch) {
-        console.log(file.patch);
-      }
-    }
+// Run rule-based review engine
+const findings = runReview(response.data);
+
+// Format findings into a human-readable review
+const reviewOutput = formatReview(findings);
+
+// Log review output (next step: post as PR comment)
+console.log("----- REVIEW OUTPUT -----");
+console.log(reviewOutput);
+
   } catch (error) {
     core.setFailed(error.message);
   }

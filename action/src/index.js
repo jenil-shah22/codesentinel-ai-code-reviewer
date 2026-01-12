@@ -1,3 +1,5 @@
+const { runReview } = require("./reviewer/engine");
+const { formatReview } = require("./reviewer/formatter");
 const core = require("@actions/core");
 const github = require("@actions/github");
 
@@ -36,14 +38,16 @@ async function run() {
 
     console.log(`Files changed in PR: ${response.data.length}`);
 
-    for (const file of response.data) {
-      console.log("-----");
-      console.log(`File: ${file.filename}`);
-      console.log(`Status: ${file.status}`);
-      if (file.patch) {
-        console.log(file.patch);
-      }
-    }
+// Run rule-based review engine
+const findings = runReview(response.data);
+
+// Format findings into a human-readable review
+const reviewOutput = formatReview(findings);
+
+// Log review output (next step: post as PR comment)
+console.log("----- REVIEW OUTPUT -----");
+console.log(reviewOutput);
+
   } catch (error) {
     core.setFailed(error.message);
   }
