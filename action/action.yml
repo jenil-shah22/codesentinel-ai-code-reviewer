@@ -1,5 +1,7 @@
-name: CodeSentinel Action
-description: AI-powered code review GitHub Action
+name: CodeSentinel AI Reviewer
+description: Automated pull request code review
+author: Jenil Shah
+
 runs:
   using: node20
   main: dist/index.js
