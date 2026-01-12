@@ -29925,16 +29925,17 @@ function wrappy (fn, cb) {
 /***/ 9243:
 /***/ ((module) => {
 
-const IGNORED_PATHS = [
-  "node_modules/",
-  "dist/",
+const IGNORED_PATTERNS = [
+  "/node_modules/",
+  "/dist/",
   "package-lock.json",
   "yarn.lock"
 ];
 
 function shouldIgnoreFile(filename) {
-  return IGNORED_PATHS.some(prefix => filename.startsWith(prefix));
+  return IGNORED_PATTERNS.some(pattern => filename.includes(pattern));
 }
+
 function runReview(files) {
   const findings = [];
 
