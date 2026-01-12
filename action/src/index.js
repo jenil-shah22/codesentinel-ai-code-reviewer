@@ -31,7 +31,7 @@ async function run() {
       owner,
       repo,
       pull_number: prNumber,
-      per_page: 100,
+      per_page: 100
     });
 
     console.log(`Files changed in PR: ${response.data.length}`);
@@ -44,7 +44,6 @@ async function run() {
         console.log(file.patch);
       }
     }
-
   } catch (error) {
     core.setFailed(error.message);
   }
