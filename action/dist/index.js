@@ -29922,6 +29922,23 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
+/***/ 826:
+/***/ ((module) => {
+
+async function postComment(octokit, owner, repo, issueNumber, body) {
+  await octokit.rest.issues.createComment({
+    owner,
+    repo,
+    issue_number: issueNumber,
+    body
+  });
+}
+
+module.exports = { postComment };
+
+
+/***/ }),
+
 /***/ 9243:
 /***/ ((module) => {
 
@@ -31948,6 +31965,8 @@ const { runReview } = __nccwpck_require__(9243);
 const { formatReview } = __nccwpck_require__(2991);
 const core = __nccwpck_require__(7484);
 const github = __nccwpck_require__(3228);
+const { postComment } = __nccwpck_require__(826);
+
 
 async function run() {
   try {
@@ -31993,6 +32012,15 @@ const reviewOutput = formatReview(findings);
 // Log review output (next step: post as PR comment)
 console.log("----- REVIEW OUTPUT -----");
 console.log(reviewOutput);
+// Post review as a PR comment
+await postComment(
+  octokit,
+  owner,
+  repo,
+  prNumber,
+  reviewOutput
+);
+
 
   } catch (error) {
     core.setFailed(error.message);

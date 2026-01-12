@@ -2,6 +2,8 @@ const { runReview } = require("./reviewer/engine");
 const { formatReview } = require("./reviewer/formatter");
 const core = require("@actions/core");
 const github = require("@actions/github");
+const { postComment } = require("./github/postComment");
+
 
 async function run() {
   try {
@@ -47,6 +49,15 @@ const reviewOutput = formatReview(findings);
 // Log review output (next step: post as PR comment)
 console.log("----- REVIEW OUTPUT -----");
 console.log(reviewOutput);
+// Post review as a PR comment
+await postComment(
+  octokit,
+  owner,
+  repo,
+  prNumber,
+  reviewOutput
+);
+
 
   } catch (error) {
     core.setFailed(error.message);
